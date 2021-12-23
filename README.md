@@ -7,7 +7,7 @@ Configure mappings to switch file / current buffer based on context (file name)
 - ticket.component.ts -> ticket.component.html
 - ticket.component.scss -> ticket.component.html
 - ticket.effects.ts -> tickets.store.ts
-- etc
+- window-helper.cpp -> window-helper.hpp
 
 ## Example Setup
 (1 to many) matchers are assigned to a single mapping.
@@ -57,6 +57,24 @@ a file with the same prefix (in our example, *ticket*) + the given suffix.
 ```
 nnoremap <silent> <leader>ww :lua require("nvim-quick-switcher").switchTo({ { matches = {'query', 'store'}, suffix = 'query.ts' }, { matches = {'component'}, suffix = 'component.html'} })<CR>
 ```
+
+## Using as a file extension toggle 
+Sometimes you may not care about a prefix, but the file extension itself.
+
+```lua
+require('nvim-quick-switcher').setup({
+    mappings = {
+      {
+        mapping = '<leader>bb',
+        matchers = {
+          { matches = { 'cpp' }, suffix = 'hpp' },
+          { matches = { 'hpp' }, suffix = 'cpp'}
+        }
+      }
+   }
+})
+```
+As an example: window-helper.cpp <-> window-helper.hpp
 
 ## Terminology
 - prefix: this is the first word in the file name; something.component.ts

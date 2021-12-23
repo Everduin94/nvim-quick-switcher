@@ -59,7 +59,7 @@ local function switchTo(matcher)
   local pathToFile = stringToTable(bufName, '(.+)/(.+)$')
   local path = pathToFile[1]
   local fileName = pathToFile[2]
-  local sections = stringToTable(fileName, '%w+')
+  local sections = stringToTable(fileName, '[%-%w_]+')
   -- TODO: substring buffer prefix on filename to get buffer suffix. If matches suffix, noop.
   for _,v in pairs(matcher) do
     local hasMatch = tableIncludes(sections, v.matches)
