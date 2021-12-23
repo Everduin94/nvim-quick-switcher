@@ -42,26 +42,26 @@ local function tableIncludes(sections, phrases)
 end
 
 local function navigation(fileName)
-    print(fileName)
     vim.api.nvim_command('e ' .. fileName)
 end
 
 local function setup(config)
   local opts = { noremap = true, silent = true }
   local keymap = vim.api.nvim_set_keymap
-  for _, entry in pairs(config) do
+  -- TODO: Index matchers by suffix for faster switching
+  for _, entry in pairs(config.mappings) do
     keymap("n", entry.mapping, ":lua require('nvim-quick-switcher').switchTo(" .. tableToString(entry.matchers) .. ")<CR>", opts)
   end
 end
 
-local function switchTo(config)
+local function switchTo(matcher)
   local bufName = vim.api.nvim_buf_get_name(0)
   local pathToFile = stringToTable(bufName, '(.+)/(.+)$')
   local path = pathToFile[1]
   local fileName = pathToFile[2]
   local sections = stringToTable(fileName, '%w+')
   -- TODO: substring buffer prefix on filename to get buffer suffix. If matches suffix, noop.
-  for _,v in pairs(config) do
+  for _,v in pairs(matcher) do
     local hasMatch = tableIncludes(sections, v.matches)
     if hasMatch then
       local prefix = sections[1]
