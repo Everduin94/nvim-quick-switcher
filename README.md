@@ -1,13 +1,13 @@
 # Nvim Quick Switcher
 
-**Work in Progress: Plugin is fragile, and config may be subject to change**
+**Work in Progress: Plugin is fragile and may not cover specific cases**
 
 ## What is it
 Configure mappings to switch file / current buffer based on context (file name)
-- ticket.component.ts -> ticket.component.html
-- ticket.component.scss -> ticket.component.html
-- ticket.effects.ts -> tickets.store.ts
-- window-helper.cpp -> window-helper.hpp
+- ticket.component.ts --> ticket.component.html
+- ticket.component.scss --> ticket.component.html
+- ticket.effects.ts --> tickets.store.ts
+- window-helper.cpp <--> window-helper.hpp
 
 ## Example Setup
 (1 to many) matchers are assigned to a single mapping.
@@ -17,9 +17,11 @@ a single mapping can have multiple outcomes
 Given the following setup:
 
 ```lua
--- Assign matches to variable for reusability
+-- Assign matches to variables for reusability
 local rxLikeMatches = {'query', 'store'}
 local componentMatches = {'component'}
+
+-- invoke setup with config
 require('nvim-quick-switcher').setup({
     mappings = {
       {
@@ -50,7 +52,13 @@ if `ticket.component.ts` or `ticket.component.scss` was in the current buffer
 
 Note, as long as the match is found anywhere in the file name, it will attempt to open 
 a file with the same prefix (in our example, *ticket*) + the given suffix.
-- The matcher can be made as specific as necessary for your usage
+- Matches only look for whole words (including optional `-` and `_`)
+- So writing a matcher such as `component.spec` will not net any results
+- However, the suffix can be as specific as necessary.
+  - Example. `suffix: 'component.spec.ts'` is valid and will navigate to `prefix.component.spec.ts`
+
+Caveat for suffix. The first period after the prefix is automatically appended.
+So suffix should be written as `something.ts` not `.something.ts`
 
 ## Example Ad Hoc Key Map
 **TODO: Make these easier to write**
@@ -74,7 +82,7 @@ require('nvim-quick-switcher').setup({
    }
 })
 ```
-As an example: window-helper.cpp <-> window-helper.hpp
+As an example: window-helper.cpp <--> window-helper.hpp
 
 ## Terminology
 - prefix: this is the first word in the file name; something.component.ts
@@ -89,6 +97,7 @@ As an example: window-helper.cpp <-> window-helper.hpp
 
 ## Motivation
 **The first pattern**
+
 Many moons ago, as a sweet summer child, I used VS Code with an extension called "Angular Switcher".
 Angular is known for creating about 18 files for a single component (kidding, it's like 4ish).
 All of the files contain the same prefix (The name of component), but different file extensions.
@@ -99,10 +108,12 @@ Not only did I want this ability in vim. But I wanted to be able to do this for
 other patterns in other frameworks. And I wanted to be able to use 1 set of bindings to do it all.
 
 **Another pattern emerges**
+
 Akita, a Redux-like framework for Angular, commonly creates numerous files for 1 data type.
 something.store.ts, something.query.ts, something.effects.ts, etc...
 
 **Bringing it all together**
+
 Instead of creating separate mappings to "go to query" and "go to html" and "go to X". 
 I wanted 1 binding to do what made sense, based on my current buffer.
 Thus, nvim-quick-switcher is quite verbose to configure. But it allows for
