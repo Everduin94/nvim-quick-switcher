@@ -25,14 +25,14 @@ local componentMatches = {'component'}
 require('nvim-quick-switcher').setup({
     mappings = {
       {
-        mapping = '<leader>bb',
+        mapping = '<leader>bo',
         matchers = {
           { matches = rxLikeMatches, suffix = 'query.ts' },
           { matches = componentMatches, suffix = 'component.html'}
         }
       },
       {
-        mapping = '<leader>nn',
+        mapping = '<leader>bi',
         matchers = {
           { matches = rxLikeMatches, suffix = 'store.ts' },
           { matches = componentMatches, suffix = 'component.scss'}
@@ -42,11 +42,11 @@ require('nvim-quick-switcher').setup({
 })
 ```
 
-on `<leader>bb` key-press,
+on `<leader>bo` key-press,
 if `ticket.store.ts` was in the current buffer
 `ticket.query.ts` would open as the current buffer
 
-on `<leader>bb` key-press,
+on `<leader>bo` key-press,
 if `ticket.component.ts` or `ticket.component.scss` was in the current buffer
 `ticket.component.html` would open as the current buffer
 
@@ -59,6 +59,7 @@ a file with the same prefix (in our example, *ticket*) + the given suffix.
 
 Caveat for suffix. The first period after the prefix is automatically appended.
 So suffix should be written as `something.ts` not `.something.ts`
+
 
 ## Example Ad Hoc Key Map
 **TODO: Make these easier to write**
@@ -85,12 +86,12 @@ require('nvim-quick-switcher').setup({
 As an example: window-helper.cpp <--> window-helper.hpp
 
 ## Terminology
-- prefix: this is the first word in the file name; something.component.ts
-  - the prefix would be "prefix"
-- **suffix**: this is anything that comes after the prefix; if we had a complex file name like: something.component.spec.ts
+- prefix: this is the first word in the file name; window-helper.component.ts
+  - the prefix would be "window-helper"
+- **suffix**: this is anything that comes after the prefix; if we had a complex file name like: window-helper.component.spec.ts
   - the suffix would be component.spec.ts
-- **matches**: nvim-quick-switcher only does basic "includes". So { 'component', 'component.spec' }
-  - this would match something.component.ts or something-else.component.spec.ts
+- **matches**: nvim-quick-switcher only does basic equals check on a single word. Given { 'component' }
+  - this would match something.component.ts and something-else.component.spec.ts
 - **matchers**: an array of {matches, suffix}
 - **mapping**: a vim mapping as a string
 - **mappings**: an array of {mapping, matchers}
@@ -102,8 +103,10 @@ Many moons ago, as a sweet summer child, I used VS Code with an extension called
 Angular is known for creating about 18 files for a single component (kidding, it's like 4ish).
 All of the files contain the same prefix (The name of component), but different file extensions.
 e.g. something.component.ts, something.component.html, something.component.scss.
+
 The Angular Switcher could assign mappings to switch to .ts,.html,.css for the currently open component;
 creating a very fast way to switch between files related to the component.
+
 Not only did I want this ability in vim. But I wanted to be able to do this for
 other patterns in other frameworks. And I wanted to be able to use 1 set of bindings to do it all.
 
@@ -118,3 +121,6 @@ Instead of creating separate mappings to "go to query" and "go to html" and "go 
 I wanted 1 binding to do what made sense, based on my current buffer.
 Thus, nvim-quick-switcher is quite verbose to configure. But it allows for
 a single mapping to switch to multiple different suffix, based on (current buffer) file name.
+
+## How I use nvim quick switcher
+TODO: Add my config and explanation
