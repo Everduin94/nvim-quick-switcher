@@ -1,126 +1,153 @@
 # Nvim Quick Switcher
+Create mappings to quickly switch-to/open file based on file name in current buffer
 
-**Work in Progress: Plugin is fragile and may not cover specific cases**
+![Demo](./nvim-quick-switcher-demo.mp4)
 
-## What is it
-Configure mappings to switch file / current buffer based on context (file name)
-- ticket.component.ts --> ticket.component.html
-- ticket.component.scss --> ticket.component.html
-- ticket.effects.ts --> tickets.store.ts
-- window-helper.cpp <--> window-helper.hpp
+## Features
+- 🦕 Switch to files with common prefix (example: "tasks"):
+  - `tasks.component.ts` --> `tasks.component.html`
+  - `tasks.component.ts` --> `tasks.component.scss`
+- 🦎 Toggle between file extensions
+  - `tasks.cpp` <--> `tasks.h`
+  - `tasks.html` <--> `tasks.css`
+- 🐙 Switch to files with different suffix, not just file extension
+  - `tasks.component.ts` --> `tasks.module.ts`
+  - `tasks.component.ts` --> `tasks.component.spec.ts`
+  - `tasks.query.ts` --> `tasks.store.ts`
+- 🔭 Use a single mapping to navigate to a file based on context
+  - `<leader>oo` (Example mapping) 
+    - If in `tasks.query.ts` --> `tasks.store.ts`
+    - If in `tasks.component.ts` --> `tasks.component.html`
 
-## Example Setup
-(1 to many) matchers are assigned to a single mapping.
-Meaning, based on the context of the current buffer / file name,
-a single mapping can have multiple outcomes
+## Installation
+Vim-plug
+```vimscript
+Plug 'Everduin94/nvim-quick-switcher'
 
-Given the following setup:
+lua << EOF
+  require("nvim-quick-switcher").setup({}) 
+EOF
+```
+
+Packer
+```lua
+use {
+  "Everduin94/nvim-quick-switcher",
+}
+
+require("nvim-quick-switcher").setup({}) 
+```
+
+## Example Configuration
+nvim-quick-switcher must be explicitly configured. It doesn't assume any
+defaults or run setup without being explicitly called.
+
+How you use nvim-quick-switcher is entirely up to you. The below configuration
+gives various examples of how you may want to use it (demonstrated in video above)
 
 ```lua
--- Assign matches to variables for reusability
-local rxLikeMatches = {'query', 'store'}
-local componentMatches = {'component'}
+local rxLikeMatches = {'query', 'store', 'effects', 'actions'}
+local componentMatches = {'component', 'module'}
 
--- invoke setup with config
-require('nvim-quick-switcher').setup({
-    mappings = {
-      {
-        mapping = '<leader>bo',
-        matchers = {
-          { matches = rxLikeMatches, suffix = 'query.ts' },
-          { matches = componentMatches, suffix = 'component.html'}
-        }
-      },
-      {
-        mapping = '<leader>bi',
-        matchers = {
-          { matches = rxLikeMatches, suffix = 'store.ts' },
-          { matches = componentMatches, suffix = 'component.scss'}
-        }
-     }
-   }
+require("nvim-quick-switcher").setup({
+  mappings = {
+    {
+      mapping = '<leader>mm',
+      matchers = {
+        { matches = {'cpp'}, suffix = 'h' },
+        { matches = {'h'}, suffix = 'cpp' },
+      }
+    },
+    {
+      mapping = "<leader>oo",
+      matchers = {
+        { matches = rxLikeMatches, suffix = 'query.ts' },
+        { matches = componentMatches, suffix = 'component.html'}
+      }
+    },
+    {
+      mapping = "<leader>oi",
+      matchers = {
+        { matches = rxLikeMatches, suffix = 'effects.ts' },
+        { matches = componentMatches, suffix = 'component.scss'}
+      }
+    },
+    {
+      mapping = "<leader>ou",
+      matchers = {
+        { matches = rxLikeMatches, suffix = 'store.ts' },
+        { matches = componentMatches, suffix = 'component.ts'}
+      }
+    },
+    {
+      mapping = "<leader>oy",
+      matchers = {
+        { matches = componentMatches, suffix = 'component.spec.ts'}
+      }
+    },
+    {
+      mapping = "<leader>oa",
+      matchers = {
+        { matches = rxLikeMatches, suffix = 'actions.ts'}
+      }
+    },
+    {
+      mapping = "<leader>op",
+      matchers = {
+        { matches = rxLikeMatches, suffix = 'module.ts'},
+        { matches = componentMatches, suffix = 'module.ts'}
+      }
+    },
+  }
 })
 ```
 
-on `<leader>bo` key-press,
-if `ticket.store.ts` was in the current buffer
-`ticket.query.ts` would open as the current buffer
+**mapping** is a vim mapping as a string
 
-on `<leader>bo` key-press,
-if `ticket.component.ts` or `ticket.component.scss` was in the current buffer
-`ticket.component.html` would open as the current buffer
+**matches** is an array of strings that will perform an == match on the current file name split by `.`
+- e.g. {'query', 'store'} could match `tickets.store.ts` or `tickets.query.ts`, but not `tickets-query.ts` or `tickets-store.ts`
 
-Note, as long as the match is found anywhere in the file name, it will attempt to open 
-a file with the same prefix (in our example, *ticket*) + the given suffix.
-- Matches only look for whole words (including optional `-` and `_`)
-- So writing a matcher such as `component.spec` will not net any results
-- However, the suffix can be as specific as necessary.
-  - Example. `suffix: 'component.spec.ts'` is valid and will navigate to `prefix.component.spec.ts`
-
-Caveat for suffix. The first period after the prefix is automatically appended.
-So suffix should be written as `something.ts` not `.something.ts`
+**suffix** is what will be appended to the prefix. Caveat, the `.` is auto appended
+- If the desired outcome is `something.component.spec.ts` the suffix should be `component.spec.ts`
+- 'component.spec.ts' // Valid
+- '.component.spec.ts' // Invalid
 
 
-## Example Ad Hoc Key Map
-**TODO: Make these easier to write**
+## Usage
+All mappings in the configuration are bound to normal mode. 
+To invoke, press the mapping defined while in a file
+that suffices one of the "matches" defined. A new or existing buffer 
+should open with the same prefix + the suffix defined.
+
+If desired, matchers can be passed directly to the switchTo function
 ```
 nnoremap <silent> <leader>ww :lua require("nvim-quick-switcher").switchTo({ { matches = {'query', 'store'}, suffix = 'query.ts' }, { matches = {'component'}, suffix = 'component.html'} })<CR>
 ```
 
-## Using as a file extension toggle 
-Sometimes you may not care about a prefix, but the file extension itself.
+## TODO
+- Collision matches don't have a sane way to resolve
+  - e.g. if `.module.ts` could go to `.component.css` or `.effects.ts` the resulting file is random
+  - I'd like to check if one or the other exists first.
+- Config validation: If a bad config is passed in; no sane output for help
 
-```lua
-require('nvim-quick-switcher').setup({
-    mappings = {
-      {
-        mapping = '<leader>bb',
-        matchers = {
-          { matches = { 'cpp' }, suffix = 'hpp' },
-          { matches = { 'hpp' }, suffix = 'cpp'}
-        }
-      }
-   }
-})
-```
-As an example: window-helper.cpp <--> window-helper.hpp
-
-## Terminology
-- prefix: this is the first word in the file name; window-helper.component.ts
-  - the prefix would be "window-helper"
-- **suffix**: this is anything that comes after the prefix; if we had a complex file name like: window-helper.component.spec.ts
-  - the suffix would be component.spec.ts
-- **matches**: nvim-quick-switcher only does basic equals check on a single word. Given { 'component' }
-  - this would match something.component.ts and something-else.component.spec.ts
-- **matchers**: an array of {matches, suffix}
-- **mapping**: a vim mapping as a string
-- **mappings**: an array of {mapping, matchers}
-
-## Motivation
-**The first pattern**
-
+## Personal Motivation
 Many moons ago, as a sweet summer child, I used VS Code with an extension called "Angular Switcher".
-Angular is known for creating about 18 files for a single component (kidding, it's like 4ish).
-All of the files contain the same prefix (The name of component), but different file extensions.
-e.g. something.component.ts, something.component.html, something.component.scss.
+Angular switcher enables jumping from various file extensions related to the current component.
 
-The Angular Switcher could assign mappings to switch to .ts,.html,.css for the currently open component;
-creating a very fast way to switch between files related to the component.
+I wanted to take that idea and accomplish two things
+- Make this work for many frameworks or file extensions
+- Assign 1 mapping for multiple frameworks / extensions.
 
-Not only did I want this ability in vim. But I wanted to be able to do this for
-other patterns in other frameworks. And I wanted to be able to use 1 set of bindings to do it all.
+This way I could make a mental map. If the beginning of my 
+mapping to start the switch was always `<leader>o`, then I could
+mentally map keys to concepts instead of specific actions.
 
-**Another pattern emerges**
+For example, based on my current context.
+- oo --> html or query
+- oi --> css or effects
+- ou --> ts or store
 
-Akita, a Redux-like framework for Angular, commonly creates numerous files for 1 data type.
-something.store.ts, something.query.ts, something.effects.ts, etc...
+As I learn of new frameworks or patterns where quick switching is
+applicable. I can add them to my existing config and mental model 
+instead of creating a whole new set of mappings I have to remember.
 
-**Bringing it all together**
-
-Instead of creating separate mappings to "go to query" and "go to html" and "go to X". 
-I wanted 1 binding to do what made sense, based on my current buffer.
-Thus, nvim-quick-switcher is quite verbose to configure. But it allows for
-a single mapping to switch to multiple different suffix, based on (current buffer) file name.
-
-## How I use nvim quick switcher
-TODO: Add my config and explanation
