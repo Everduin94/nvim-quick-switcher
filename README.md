@@ -1,7 +1,7 @@
 # Nvim Quick Switcher
 Create mappings to quickly switch-to/open file based on file name in current buffer. Written in Lua.
 
-![Demo](https://user-images.githubusercontent.com/14320878/147480710-a7359fe2-38dd-4d75-96d2-e6cf13a90a15.mp4)
+https://user-images.githubusercontent.com/14320878/147480710-a7359fe2-38dd-4d75-96d2-e6cf13a90a15.mp4
 
 ## Features
 - 🦕 Switch to files with common prefix (example: "tasks"):
