@@ -102,22 +102,22 @@ require("nvim-quick-switcher").setup({
 })
 ```
 
-**mapping** is a vim mapping as a string
+**Configuration Properties**
 
-**matches** is an array of strings that will perform an == match on the current file name split by `.`
-- e.g. {'query', 'store'} could match `tickets.store.ts` or `tickets.query.ts`, but not `tickets-query.ts` or `tickets-store.ts`
-
-**suffix** is what will be appended to the prefix. Caveat, the `.` is auto appended
-- If the desired outcome is `something.component.spec.ts` the suffix should be `component.spec.ts`
-- 'component.spec.ts' // Valid
-- '.component.spec.ts' // Invalid
-
+- **mapping**: A vim mapping as a string
+- **matchers**: An array of `{ matches, suffix }`
+- **matches**: An array of strings that will perform an == match on the current file name split by `.`
+  - `{'query', 'store'}` could match `tickets.store.ts` or `tickets.query.ts`
+  - but **not** `tickets-query.ts` or `tickets-store.ts`
+- **suffix**: A string appended to the prefix. Caveat, the `.` is auto appended
+  - If the desired outcome is `something.component.spec.ts` the suffix should be `component.spec.ts`
 
 ## Usage
 All mappings in the configuration are bound to normal mode. 
-To invoke, press the mapping defined while in a file
-that suffices one of the "matches" defined. A new or existing buffer 
-should open with the same prefix + the suffix defined.
+To use, while in a file that suffices one of the "matches" defined, invoke it's corresponding mapping.
+A new or existing buffer should open with the same prefix + the suffix defined by that mapping.
+
+**Ad Hoc Config**
 
 If desired, matchers can be passed directly to the switchTo function
 ```
