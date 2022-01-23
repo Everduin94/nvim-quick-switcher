@@ -20,7 +20,7 @@ https://user-images.githubusercontent.com/14320878/147480710-a7359fe2-38dd-4d75-
     - If in `tasks.component.ts` --> `tasks.component.html`
 
 ## Installation
-Vim-plug
+Vim-plug -- See "Example Configuration" Below. This plugin does nothing without explicit setup.
 ```vimscript
 Plug 'Everduin94/nvim-quick-switcher'
 
