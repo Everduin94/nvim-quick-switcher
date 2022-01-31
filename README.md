@@ -50,8 +50,8 @@ local rxLikeMatches = {'query', 'store', 'effects', 'actions'}
 local componentMatches = {'component', 'module'}
 
 require("nvim-quick-switcher").setup({
-  -- Allows swapping between .cpp and .h files (e.g. Node.cpp <-> Node.h)
   mappings = {
+    -- Allows swapping between .cpp and .h files (e.g. Node.cpp <-> Node.h)
     {
       mapping = '<leader>mm',
       matchers = {
