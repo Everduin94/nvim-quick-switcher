@@ -46,7 +46,10 @@ How you use nvim-quick-switcher is entirely up to you. The below configuration
 gives various examples of how you may want to use it (demonstrated in video above)
 
 ```lua
+-- Looks for query|store|effects|actions in the file name
 local rxLikeMatches = {'query', 'store', 'effects', 'actions'}
+
+-- Looks for component|module in the file name
 local componentMatches = {'component', 'module'}
 
 require("nvim-quick-switcher").setup({
