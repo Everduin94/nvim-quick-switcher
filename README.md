@@ -1,7 +1,7 @@
 # Nvim Quick Switcher
-Create mappings to quickly switch-to/open file based on file name in current buffer. Written in Lua.
+Create mappings to quickly navigate to other files based on the current file name. Written in Lua.
 
-https://user-images.githubusercontent.com/14320878/147480710-a7359fe2-38dd-4d75-96d2-e6cf13a90a15.mp4
+![demo](https://user-images.githubusercontent.com/14320878/151885059-5a1f1773-6e7c-469e-9866-f615cc688957.gif)
 
 ## Features
 - 🦕 Switch to files with common prefix (example: "tasks"):
@@ -50,6 +50,7 @@ local rxLikeMatches = {'query', 'store', 'effects', 'actions'}
 local componentMatches = {'component', 'module'}
 
 require("nvim-quick-switcher").setup({
+  -- Allows swapping between .cpp and .h files (e.g. Node.cpp <-> Node.h)
   mappings = {
     {
       mapping = '<leader>mm',
@@ -58,6 +59,9 @@ require("nvim-quick-switcher").setup({
         { matches = {'h'}, suffix = 'cpp' },
       }
     },
+    -- oo, oi, and ou work together to allow you to navigate to any file while in:
+      -- ts|scss|html
+      -- query|effects|store
     {
       mapping = "<leader>oo",
       matchers = {
@@ -79,12 +83,15 @@ require("nvim-quick-switcher").setup({
         { matches = componentMatches, suffix = 'component.ts'}
       }
     },
+    -- Matches can match longer suffix than the file you're in
+     -- e.g. component.html -> component.spec.ts, is valid
     {
       mapping = "<leader>oy",
       matchers = {
         { matches = componentMatches, suffix = 'component.spec.ts'}
       }
     },
+    -- Mapping/Matchers can be 1:1, you don't have to put many matches on a single keybind
     {
       mapping = "<leader>oa",
       matchers = {
@@ -102,7 +109,7 @@ require("nvim-quick-switcher").setup({
 })
 ```
 
-**Configuration Properties**
+**Configuration Properties / Additional Info**
 
 - **mapping**: A vim mapping as a string
 - **matchers**: An array of `{ matches, suffix }`
@@ -119,7 +126,7 @@ A new or existing buffer should open with the same prefix + the suffix defined b
 
 **Ad Hoc Config**
 
-If desired, matchers can be passed directly to the switchTo function
+If desired, matchers can be passed directly to the switchTo function.
 ```
 nnoremap <silent> <leader>ww :lua require("nvim-quick-switcher").switchTo({ { matches = {'query', 'store'}, suffix = 'query.ts' }, { matches = {'component'}, suffix = 'component.html'} })<CR>
 ```
@@ -138,16 +145,13 @@ I wanted to take that idea and accomplish two things
 - Make this work for many frameworks or file extensions
 - Assign 1 mapping for multiple frameworks / extensions.
 
-This way I could make a mental map. If the beginning of my 
-mapping to start the switch was always `<leader>o`, then I could
-mentally map keys to concepts instead of specific actions.
+I currently use nvim-quick-switcher on a daily basis for Angular Components and Redux-like files.
 
 For example, based on my current context.
 - oo --> html or query
 - oi --> css or effects
 - ou --> ts or store
 
-As I learn of new frameworks or patterns where quick switching is
-applicable. I can add them to my existing config and mental model 
-instead of creating a whole new set of mappings I have to remember.
+1 binding, opens different files, based on context. Instead of assigning multiple bindings for every context.
+
 
