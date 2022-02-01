@@ -31,7 +31,7 @@ use {
 
 ## Example Usage
 
-### Switch
+### ➡️ Switch
 ```vim
 nnoremap <silent> <leader>ou :lua require('nvim-quick-switcher').switch('component.ts')<CR>
 nnoremap <silent> <leader>oi :lua require('nvim-quick-switcher').switch('component.scss')<CR>
@@ -39,7 +39,7 @@ nnoremap <silent> <leader>oo :lua require('nvim-quick-switcher').switch('compone
 nnoremap <silent> <leader>op :lua require('nvim-quick-switcher').switch('module.ts')<CR>
 ```
 
-### Toggle
+### 🔄 Toggle
 ```vim
 nnoremap <silent> <leader>oc :lua require('nvim-quick-switcher').toggle('cpp', 'h')<CR>
 ```
