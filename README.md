@@ -18,7 +18,7 @@ Quickly navigate to other files/extensions based on the current file name. Writt
 
 ## Installation
 Vim-plug 
-```vimscript
+```vim
 Plug 'Everduin94/nvim-quick-switcher'
 ```
 
@@ -32,7 +32,7 @@ use {
 ## Example Usage
 
 ### Switch
-```vimscript
+```vim
 nnoremap <silent> <leader>ou :lua require('nvim-quick-switcher').switch('component.ts')<CR>
 nnoremap <silent> <leader>oi :lua require('nvim-quick-switcher').switch('component.scss')<CR>
 nnoremap <silent> <leader>oo :lua require('nvim-quick-switcher').switch('component.html')<CR>
@@ -40,7 +40,7 @@ nnoremap <silent> <leader>op :lua require('nvim-quick-switcher').switch('module.
 ```
 
 ### Toggle
-```vimscript
+```vim
 nnoremap <silent> <leader>oc :lua require('nvim-quick-switcher').toggle('cpp', 'h')<CR>
 ```
 ### Explanation
@@ -70,7 +70,7 @@ Quick Switcher provides two functions
 }
 ```
 
-```vimscript
+```vim
 " Open a vertical split 50/50
 nnoremap <silent> <leader>ou :lua require('nvim-quick-switcher').switch('component.ts', { split = 'vertical' })<CR>
 
