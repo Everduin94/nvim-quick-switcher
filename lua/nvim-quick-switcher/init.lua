@@ -30,48 +30,65 @@ local function stringToTable(str, regex)
   return array
 end
 
-local function tableIncludes(sections, phrases)
-  for _,v in pairs(sections) do
-    for k,j in pairs(phrases) do
-      if v == j then
-        return true
-      end
-    end
-  end
-  return false
-end
-
 local function navigation(fileName)
     vim.api.nvim_command('e ' .. fileName)
 end
 
-local function setup(config)
-  local opts = { noremap = true, silent = true }
-  local keymap = vim.api.nvim_set_keymap
-  -- TODO: Index matchers by suffix for faster switching
-  for _, entry in pairs(config.mappings) do
-    keymap("n", entry.mapping, ":lua require('nvim-quick-switcher').switchTo(" .. tableToString(entry.matchers) .. ")<CR>", opts)
-  end
-end
-
-local function switchTo(matcher)
+local function getPathState()
   local bufName = vim.api.nvim_buf_get_name(0)
   local pathToFile = stringToTable(bufName, '(.+)/(.+)$')
   local path = pathToFile[1]
   local fileName = pathToFile[2]
   local sections = stringToTable(fileName, '[%-%w_]+')
-  -- TODO: substring buffer prefix on filename to get buffer suffix. If matches suffix, noop.
-  for _,v in pairs(matcher) do
-    local hasMatch = tableIncludes(sections, v.matches)
-    if hasMatch then
-      local prefix = sections[1]
-      return navigation(path .. '/' .. prefix ..  '.' .. v.suffix)
-    end
+  local prefix = sections[1]
+
+  local currentSuffix = '';
+  local separator = '';
+  for i = 2, #sections, 1 do
+   currentSuffix = currentSuffix .. separator .. sections[i]
+   separator = '.'
   end
+
+  return {
+    path = path,
+    prefix = prefix,
+    currentSuffix = currentSuffix
+  }
+end
+
+-- Docs suggest 'vertical'|'horizontal' - anything works for horizontal.
+-- However, in the future I plan to add 'window', so I want to use string and not boolean
+local function openSplit(options)
+
+  local size = options.size or '';
+  local direction = options.split == 'vertical' and 'vsp' or 'sp'
+  local command = size .. direction
+
+  vim.api.nvim_command(command)
+end
+
+local function switch(suffix, options)
+  local pathState = getPathState();
+
+  if (options ~= nil and options.split ~= nil) then
+    openSplit(options);
+  end
+
+  return navigation(pathState.path .. '/' .. pathState.prefix ..  '.' .. suffix)
+end
+
+local function toggle(suffixOne, suffixTwo)
+  local pathState = getPathState();
+  local suffix = suffixOne;
+  if pathState.currentSuffix == suffix then
+    suffix = suffixTwo
+  end
+
+  return navigation(pathState.path .. '/' .. pathState.prefix ..  '.' .. suffix)
 end
 
 return {
-  setup = setup,
-  switchTo = switchTo,
+  toggle = toggle,
+  switch = switch,
 }
 
