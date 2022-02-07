@@ -91,3 +91,6 @@ I currently use nvim-quick-switcher on a daily basis for Angular Components and 
 
 If there's a framework that's possible to support, but a change is needed to support it. Create an issue.
 
+## Alternatives
+- [projectionist](https://github.com/tpope/vim-projectionist)
+
