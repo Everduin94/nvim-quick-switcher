@@ -1,5 +1,5 @@
 # Nvim Quick Switcher
-Quickly navigate to other files/extensions based on the current file name. Written in Lua.
+Quickly navigate to related/alternate files/extensions based on the current file name. Written in Lua.
 
 ![demo-2](https://user-images.githubusercontent.com/14320878/152060031-cec37a34-b1f8-4812-9758-e43a04f044a8.gif)
 
@@ -18,7 +18,7 @@ Quickly navigate to other files/extensions based on the current file name. Writt
 
 ## Installation
 Vim-plug 
-```vim
+```vimscript
 Plug 'Everduin94/nvim-quick-switcher'
 ```
 
@@ -31,19 +31,6 @@ use {
 
 ## Example Usage
 
-### ➡️ Switch
-```vim
-nnoremap <silent> <leader>ou :lua require('nvim-quick-switcher').switch('component.ts')<CR>
-nnoremap <silent> <leader>oi :lua require('nvim-quick-switcher').switch('component.scss')<CR>
-nnoremap <silent> <leader>oo :lua require('nvim-quick-switcher').switch('component.html')<CR>
-nnoremap <silent> <leader>op :lua require('nvim-quick-switcher').switch('module.ts')<CR>
-```
-
-### 🔄 Toggle
-```vim
-nnoremap <silent> <leader>oc :lua require('nvim-quick-switcher').toggle('cpp', 'h')<CR>
-```
-### Explanation
 Quick Switcher provides two functions
 
 `switch(suffix)` -- provided a string, switches to `prefix`.`suffix`
@@ -60,6 +47,16 @@ Quick Switcher provides two functions
   - In `node.cpp`, `toggle('cpp', 'h')`, will return `node.h`
   - In `node.h`, `toggle('cpp', 'h')`, will return `node.cpp`
 
+### Switch
+```vimscript
+nnoremap <silent> <leader>oc :lua require('nvim-quick-switcher').toggle('cpp', 'h')<CR>
+```
+
+### Toggle
+```vimscript
+nnoremap <silent> <leader>oc :lua require('nvim-quick-switcher').toggle('cpp', 'h')<CR>
+```
+
 ### Advanced Options
 `switch` optionally takes an `options` parameter.
 
@@ -70,7 +67,7 @@ Quick Switcher provides two functions
 }
 ```
 
-```vim
+```vimscript
 " Open a vertical split 50/50
 nnoremap <silent> <leader>ou :lua require('nvim-quick-switcher').switch('component.ts', { split = 'vertical' })<CR>
 
