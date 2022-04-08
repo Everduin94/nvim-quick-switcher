@@ -47,6 +47,7 @@ function M.default_find_config()
       path = nil,
       reverse = true,
       prefix = 'default',
+      regex_type = 'E',
     }
 end
 

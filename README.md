@@ -53,8 +53,19 @@ nnoremap <silent> <leader>oc :lua require('nvim-quick-switcher').toggle('cpp', '
 ```
 
 ### Toggle
-```vimscript
 nnoremap <silent> <leader>oc :lua require('nvim-quick-switcher').toggle('cpp', 'h')<CR>
+nnoremap <silent> <leader>oo :lua require('nvim-quick-switcher').find('*query*')<CR>
+nnoremap <silent> <leader>ot :lua require('nvim-quick-switcher').find('*spec*')<CR>
+```
+#### Regex
+*Currently uses `extended` regex by default. Must escape backslashes. Returns ui select if multiple results*
+*Will search backwards 1 directory if no results found, useful for moving in and out of a folder*
+*Pulls all results equal to `prefix*` then further filters via regex*
+```vimscript
+nnoremap <silent> <leader>ot :lua require('nvim-quick-switcher').find('.+spec\\.|.+test\\.', { regex = true })<CR>
+nnoremap <silent> <leader>oc :lua require('nvim-quick-switcher').find('.+css|.+scss|.+sass', { regex = true })<CR>
+nnoremap <silent> <leader>oq :lua require('nvim-quick-switcher').find('*query*')<CR>
+>>>>>>> 8aee1b6 (Fix regex for mac, added config option)
 ```
 
 ### Advanced Options
@@ -64,6 +75,17 @@ nnoremap <silent> <leader>oc :lua require('nvim-quick-switcher').toggle('cpp', '
 {
   split = 'vertical'|'horizontal'|nil -- nil is default
   size = 100 -- units=columns|rows default is '' which returns 50/50 split
+  regex = false, -- true uses perl regex. results will be filters by `prefix*`
+  maxdepth = 2, -- directory depth 
+  reverse = true, -- false will disable reverse search when nothing is found
+  path = nil, -- overwrite path (experimental).
+  
+  -- if 'full' tasks.component.ts --> `tasks.component` instead of `tasks`
+   -- i.e. stop at last period
+  -- if 'short' tasks-util.lua or tasks_util.lua --> `tasks` instead of `tasks-util` or `tasks_util`
+   -- i.e. stop at first -|_
+  prefix = 'default', 
+  regex_type = 'E' -- default regex extended. See grep for types.
 }
 ```
 

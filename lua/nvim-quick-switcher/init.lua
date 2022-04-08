@@ -67,7 +67,7 @@ function M.find(input, user_config)
     local prefix = util.resolve_prefix(path_state, config.prefix)
     local base_find = [[find ]] .. path .. [[ -maxdepth ]] .. config.maxdepth
     local name_based = ' -name ' .. [[']] .. prefix .. input .. [[']]
-    local regex_based = ' -name ' .. [[']] .. prefix .. [[*']] .. [[ | grep -P ]] .. [[']] .. input .. [[']]
+    local regex_based = ' -name ' .. [[']] .. prefix .. [[*']] .. [[ | grep ]] .. '-' .. config.regex_type  .. [[ ']] .. input .. [[']]
     local search = config.regex and base_find .. regex_based or base_find .. name_based
     local output = util.readCmd(search)
     local matches = util.listToTable(output, function (item)
