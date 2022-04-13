@@ -63,7 +63,7 @@ best option to get started. For more examples, see `Recipes`
 - `node.h` --> `node.cpp`
 
 ### 🔍 Find 
-*Uses gnu/linx `find` & `grep` to find file and switch to `prefix` `result`*
+*Uses gnu/linux `find` & `grep` to find file and switch to `prefix` `result`*
 
 `require('nvim-quick-switcher').find('*query*')`
 - Allows wild cards, i.e. first argument is search parameter for gnu/linux find
