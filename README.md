@@ -56,25 +56,27 @@ best option to get started. For more examples, see `Recipes`
 ```
 
 ### 🔄 Toggle
-*toggles `prefix`.`suffix`, based on current file extension*
+*Toggles `prefix`.`suffix`, based on current suffix / file extension*
 
 `require('nvim-quick-switcher').toggle('cpp', 'h')
 - `node.cpp` --> `node.h`
 - `node.h` --> `node.cpp`
 
 ### 🔍 Find 
-*uses find / grep to find file and switch to `prefix` `result`*
+*Uses gnu/linx `find` & `grep` to find file and switch to `prefix` `result`*
 
 `require('nvim-quick-switcher').find('*query*')`
-- Uses find, allows wild cards, i.e. first argument is search parameter for gnu/linux find
+- Allows wild cards, i.e. first argument is search parameter for gnu/linux find
 - `ticket.component.ts` --> `ticket.query.ts`
 
 `require('nvim-quick-switcher').find('.+css|.+scss|.+sass', { regex = true })`
 - Uses find, then filters via grep regex, i.e. first argument is regex
 - `ticket.component.ts` --> `ticket.component.css|scss|sass`
+- When using backslash, may have to escape via `\\`
 
 If multiple matches are found will prompt UI Select.
 - You can use options like `prefix` or `regex` to make your searches more specific.
+
 
 If no results are found, will search backwards one directory, see `reverse`
 
