@@ -25,7 +25,7 @@ Quickly navigate to related/alternate files/extensions based on the current file
 
 ## Installation
 Vim-plug 
-```vimscript
+```vim
 Plug 'Everduin94/nvim-quick-switcher'
 ```
 
