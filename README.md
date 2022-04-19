@@ -38,7 +38,7 @@ use {
 
 ## Usage
 
-Switcher has 3 functions. `switch`, `toggle`, and `find`.
+Switcher has 3 functions. `switch`, `toggle`, and `find`. No setup function call required. Just call a function with the desired arguments.
 
 For more examples, see `Recipes`
 
