@@ -58,7 +58,7 @@ best option to get started. For more examples, see `Recipes`
 ### 🔄 Toggle
 *Toggles `prefix`.`suffix`, based on current suffix / file extension*
 
-`require('nvim-quick-switcher').toggle('cpp', 'h')
+`require('nvim-quick-switcher').toggle('cpp', 'h')`
 - `node.cpp` --> `node.h`
 - `node.h` --> `node.cpp`
 
