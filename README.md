@@ -38,8 +38,9 @@ use {
 
 ## Usage
 
-Switcher has 3 functions. `switch` and `toggle` are the most straightforward and the
-best option to get started. For more examples, see `Recipes`
+Switcher has 3 functions. `switch`, `toggle`, and `find`.
+
+For more examples, see `Recipes`
 
 ### ➡️ Switch
 *Gets "prefix" of file name, switches to `prefix`.`suffix`*
@@ -63,15 +64,15 @@ best option to get started. For more examples, see `Recipes`
 - `node.h` --> `node.cpp`
 
 ### 🔍 Find 
-*Uses gnu/linux `find` & `grep` to find file and switch to `prefix` `result`*
+*Uses gnu/linux `find` & `grep` to find file and switch to `prefix`+`pattern`*
 
 `require('nvim-quick-switcher').find('*query*')`
 - Allows wild cards, i.e. first argument is search parameter for gnu/linux find
-- `ticket.component.ts` --> `ticket.query.ts`
+- file: `ticket.component.ts` --> pattern: `ticket*query*`
 
 `require('nvim-quick-switcher').find('.+css|.+scss|.+sass', { regex = true })`
 - Uses find, then filters via grep regex, i.e. first argument is regex
-- `ticket.component.ts` --> `ticket.component.css|scss|sass`
+- file: `ticket.component.ts` --> pattern: `ticket.+css|.+scss|.+sass`
 - When using backslash, may have to escape via `\\`
 
 If multiple matches are found will prompt UI Select.
