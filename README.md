@@ -1,5 +1,5 @@
 # Nvim Quick Switcher
-Quickly navigate to other files/extensions based on the current file name. Written in Lua.
+Quickly navigate to related/alternate files/extensions based on the current file name. Written in Lua.
 
 ![demo-2](https://user-images.githubusercontent.com/14320878/152060031-cec37a34-b1f8-4812-9758-e43a04f044a8.gif)
 
@@ -15,6 +15,13 @@ Quickly navigate to other files/extensions based on the current file name. Writt
   - `tasks.component.ts` --> `tasks.module.ts`
   - `tasks.component.ts` --> `tasks.component.spec.ts`
   - `tasks.query.ts` --> `tasks.store.ts`
+- 🐒 Find files by Wilcard or Regex
+  - `tasks.ts` --> `tasks.spec.ts` | `tasks.test.ts` 
+  - `tasks.ts` --> `tasks.css` | `tasks.scss` | `tasks.sass`
+  - `/tasks.components.ts` --> `state/tasks.query.ts` 
+  - `state/tasks.query.ts` --> `../tasks.component.ts`
+  - `controller.lua` --> `controller_spec.lua`
+  - `controller-util.lua` --> `controller-service.lua`
 
 ## Installation
 Vim-plug 
@@ -29,56 +36,105 @@ use {
 }
 ```
 
-## Example Usage
+## Usage
+
+Switcher has 3 functions. `switch`, `toggle`, and `find`. No setup function call required. Just call a function with the desired arguments.
+
+For more examples, see `Recipes`
 
 ### ➡️ Switch
-```vim
-nnoremap <silent> <leader>ou :lua require('nvim-quick-switcher').switch('component.ts')<CR>
-nnoremap <silent> <leader>oi :lua require('nvim-quick-switcher').switch('component.scss')<CR>
-nnoremap <silent> <leader>oo :lua require('nvim-quick-switcher').switch('component.html')<CR>
-nnoremap <silent> <leader>op :lua require('nvim-quick-switcher').switch('module.ts')<CR>
-```
+*Gets "prefix" of file name, switches to `prefix`.`suffix`*
 
-### 🔄 Toggle
-```vim
-nnoremap <silent> <leader>oc :lua require('nvim-quick-switcher').toggle('cpp', 'h')<CR>
-```
-### Explanation
-Quick Switcher provides two functions
+`require('nvim-quick-switcher').switch('component.ts')`
+- `ticket.component.html` --> `ticket.component.ts`
 
-`switch(suffix)` -- provided a string, switches to `prefix`.`suffix`
-- For context, `prefix`, is the first word before the first `.`
-- Examples:
-  - In `index.ts`, `switch('html')`, will return `index.html`
-  - In `tasks.component.ts`, `switch('component.html')`, will return `tasks.component.html`
-  - In `tasks.query.ts`, `switch('store.ts')`, will return `tasks.store.ts`
-
-`toggle(suffixOne, suffixTwo)` -- provided two strings, toggles between `prefix`.`suffixOne`|`prefix`.`suffixTwo`
-- Examples:
-  - In `index.ts`, `toggle('html', 'ts')`, will return `index.html`
-  - In `index.html`, `toggle('html', 'ts')`, will return `index.ts`
-  - In `node.cpp`, `toggle('cpp', 'h')`, will return `node.h`
-  - In `node.h`, `toggle('cpp', 'h')`, will return `node.cpp`
-
-### Advanced Options
-`switch` optionally takes an `options` parameter.
-
+#### Options
 ```lua
 {
   split = 'vertical'|'horizontal'|nil -- nil is default
-  size = 100 -- units=columns|rows default is '' which returns 50/50 split
+  size = 100 -- # of columns | rows. default is 50% split
 }
 ```
 
-```vim
-" Open a vertical split 50/50
-nnoremap <silent> <leader>ou :lua require('nvim-quick-switcher').switch('component.ts', { split = 'vertical' })<CR>
+### 🔄 Toggle
+*Toggles `prefix`.`suffix`, based on current suffix / file extension*
 
-" Open a horizontal split, with a size of 80 rows
-nnoremap <silent> <leader>ou :lua require('nvim-quick-switcher').switch('component.ts', { split = 'horizontal', size = 80 })<CR>
+`require('nvim-quick-switcher').toggle('cpp', 'h')`
+- `node.cpp` --> `node.h`
+- `node.h` --> `node.cpp`
 
-" Open a vertical split, with a size of 80 columns
-nnoremap <silent> <leader>ou :lua require('nvim-quick-switcher').switch('component.ts', { split = 'vertical', size = 80 })<CR>
+### 🔍 Find 
+*Uses gnu/linux `find` & `grep` to find file and switch to `prefix`+`pattern`*
+
+`require('nvim-quick-switcher').find('*query*')`
+- Allows wild cards, i.e. first argument is search parameter for gnu/linux find
+- file: `ticket.component.ts` --> pattern: `ticket*query*`
+
+`require('nvim-quick-switcher').find('.+css|.+scss|.+sass', { regex = true })`
+- Uses find, then filters via grep regex, i.e. first argument is regex
+- file: `ticket.component.ts` --> pattern: `ticket.+css|.+scss|.+sass`
+- When using backslash, may have to escape via `\\`
+
+If multiple matches are found will prompt UI Select.
+- You can use options like `prefix` or `regex` to make your searches more specific.
+
+
+If no results are found, will search backwards one directory, see `reverse`
+
+#### Options 
+```lua
+{
+  split = 'vertical'|'horizontal'|nil
+  size = 100 
+  regex = false, -- true uses perl regex. results will be filters by `prefix*`
+  maxdepth = 2, -- directory depth 
+  reverse = true, -- false will disable reverse search when no results are found
+  path = nil, -- overwrite path (experimental).
+  prefix = 'default', -- full: stop at last period. short: stop at first _ or -. default: stop at first period.
+  regex_type = 'E' -- default regex extended. See grep for types.
+}
+```
+
+## Recipes (My Binds)
+*My configuration for nvim-quick-switcher. Written in Lua*
+
+```lua
+local keymap = vim.api.nvim_set_keymap
+local opts = { noremap = true, silent = true }
+
+-- Tests
+keymap("n", "<leader>ot", "<cmd>:lua require('nvim-quick-switcher').find('.+test|.+spec', { regex = true, prefix='full' })<CR>", opts)
+
+-- Redux-like
+-- Using find over switch to search with depth incase outside a redux-like folder "/state"
+keymap("n", "<leader>oe", "<cmd>:lua require('nvim-quick-switcher').find('*effects*')<CR>", opts)
+keymap("n", "<leader>oa", "<cmd>:lua require('nvim-quick-switcher').find('*actions*')<CR>", opts)
+keymap("n", "<leader>oq", "<cmd>:lua require('nvim-quick-switcher').find('*query*')<CR>", opts)
+keymap("n", "<leader>ow", "<cmd>:lua require('nvim-quick-switcher').find('*store*')<CR>", opts)
+
+-- Stylesheets
+keymap("n", "<leader>oi", "<cmd>:lua require('nvim-quick-switcher').find('.+css|.+scss|.+sass', { regex = true, prefix='full' })<CR>", opts)
+
+-- Angular
+-- Using find over switch to look backwards incase in a redux-like folder "/state"
+keymap("n", "<leader>os", "<cmd>:lua require('nvim-quick-switcher').find('.service.ts')<CR>", opts)
+keymap("n", "<leader>ou", "<cmd>:lua require('nvim-quick-switcher').find('.component.ts')<CR>", opts)
+keymap("n", "<leader>oo", "<cmd>:lua require('nvim-quick-switcher').find('.component.html')<CR>", opts)
+keymap("n", "<leader>op", "<cmd>:lua require('nvim-quick-switcher').find('.module.ts')<CR>", opts)
+
+-- Switches for - or _ e.g. controller-util.lua
+keymap("n", "<leader>ol", "<cmd>:lua require('nvim-quick-switcher').find('*util.*', { prefix='short' })<CR>", opts)
+
+-- Legacy
+-- keymap("n", "<leader>ou", "<cmd>:lua require('nvim-quick-switcher').switch('component.ts')<CR>", opts)
+-- keymap("n", "<leader>oo", "<cmd>:lua require('nvim-quick-switcher').switch('component.html')<CR>", opts)
+-- keymap("n", "<leader>oi", "<cmd>:lua require('nvim-quick-switcher').switch('component.scss')<CR>", opts)
+-- keymap("n", "<leader>op", "<cmd>:lua require('nvim-quick-switcher').switch('module.ts')<CR>", opts)
+-- keymap("n", "<leader>ot", "<cmd>:lua require('nvim-quick-switcher').switch('component.spec.ts')<CR>", opts)
+-- keymap("n", "<leader>ovu", "<cmd>:lua require('nvim-quick-switcher').switch('component.ts', { split = 'vertical' })<CR>", opts)
+-- keymap("n", "<leader>ovi", "<cmd>:lua require('nvim-quick-switcher').switch('component.scss', { split = 'vertical' })<CR>", opts)
+-- keymap("n", "<leader>ovo", "<cmd>:lua require('nvim-quick-switcher').switch('component.html', { split = 'vertical' })<CR>", opts)
+-- keymap("n", "<leader>oc", "<cmd>:lua require('nvim-quick-switcher').toggle('cpp', 'h')<CR>", opts)
 ```
 
 ## Personal Motivation
@@ -87,9 +143,7 @@ Angular switcher enables switching to various file extensions related to the cur
 
 I wanted to take that idea and make it work for many frameworks or file extensions
 
-I currently use nvim-quick-switcher on a daily basis for Angular Components and Redux-like files.
-
-If there's a framework that's possible to support, but a change is needed to support it. Create an issue.
+I currently use nvim-quick-switcher on a daily basis for Angular Components, Tests, Lua util files, and Redux-like files.
 
 ## Alternatives
 - [projectionist](https://github.com/tpope/vim-projectionist)
