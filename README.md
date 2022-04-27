@@ -72,12 +72,11 @@ For more examples, see `Recipes`
 
 `require('nvim-quick-switcher').find('.+css|.+scss|.+sass', { regex = true })`
 - Uses find, then filters via grep regex, i.e. first argument is regex
-- file: `ticket.component.ts` --> pattern: `ticket.+css|.+scss|.+sass`
+- file: `ticket.component.ts` --> find: `ticket*` --> grep: `.+css|.+scss|.+sass`
 - When using backslash, may have to escape via `\\`
 
 If multiple matches are found will prompt UI Select.
-- You can use options like `prefix` or `regex` to make your searches more specific.
-
+- You can use options like `prefix` or `regex` to make your searches more specific. See `Recipes` for examples.
 
 If no results are found, will search backwards one directory, see `reverse`
 
@@ -86,11 +85,11 @@ If no results are found, will search backwards one directory, see `reverse`
 {
   split = 'vertical'|'horizontal'|nil
   size = 100 
-  regex = false, -- true uses perl regex. results will be filters by `prefix*`
+  regex = false, -- If true, first argument uses regex instead of find string/wildcard.
   maxdepth = 2, -- directory depth 
   reverse = true, -- false will disable reverse search when no results are found
   path = nil, -- overwrite path (experimental).
-  prefix = 'default', -- full: stop at last period. short: stop at first _ or -. default: stop at first period.
+  prefix = 'default', -- full: stop at last period | short: stop at first _ or - | default: stop at first period.
   regex_type = 'E' -- default regex extended. See grep for types.
 }
 ```
