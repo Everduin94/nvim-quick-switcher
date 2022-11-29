@@ -1,4 +1,5 @@
 local util = require('nvim-quick-switcher.util')
+local ts = require('nvim-quick-switcher.ts')
 
 local M = {}
 
@@ -61,6 +62,12 @@ function M.toggle(suffixOne, suffixTwo)
   end
 
   return navigation(path_state.path .. '/' .. path_state.prefix ..  '.' .. suffix)
+end
+
+function M.inline_ts_switch(file_type, query_string, user_config)
+    local config = util.prop_factory(util.default_inline_config(), user_config)
+    local query = vim.treesitter.parse_query(file_type, query_string)
+    ts.go_to_node(file_type, query, config.goto_end, config.avoid_set_jump)
 end
 
 function M.find(input, user_config)
