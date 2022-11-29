@@ -48,6 +48,7 @@ function M.default_find_config()
       reverse = true,
       prefix = 'default',
       regex_type = 'E',
+      ignore_prefix = false
     }
 end
 

@@ -47,6 +47,7 @@ end
 -- Instead of '.' config/options. Create flexible call-back function.
 function M.switch(suffix, user_config)
   local path_state = get_path_state();
+  if user_config.ignore_prefix then path_state.prefix = '' end
   return navigation(path_state.path .. '/' .. path_state.prefix ..  '.' .. suffix, user_config)
 end
 
@@ -65,6 +66,7 @@ function M.find(input, user_config)
     local path_state = get_path_state();
     local path = config.path and config.path or path_state.path
     local prefix = util.resolve_prefix(path_state, config.prefix)
+    if user_config.ignore_prefix then prefix = '' end
     local base_find = [[find ]] .. path .. [[ -maxdepth ]] .. config.maxdepth
     local name_based = ' -name ' .. [[']] .. prefix .. input .. [[']]
     local regex_based = ' -name ' .. [[']] .. prefix .. [[*']] .. [[ | grep ]] .. '-' .. config.regex_type  .. [[ ']] .. input .. [[']]

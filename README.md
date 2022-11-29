@@ -15,7 +15,7 @@ Quickly navigate to related/alternate files/extensions based on the current file
   - `tasks.component.ts` --> `tasks.module.ts`
   - `tasks.component.ts` --> `tasks.component.spec.ts`
   - `tasks.query.ts` --> `tasks.store.ts`
-- 🐒 Find files by Wilcard or Regex
+- 🐒 Find files by Wilcard (Glob) or Regex 
   - `tasks.ts` --> `tasks.spec.ts` | `tasks.test.ts` 
   - `tasks.ts` --> `tasks.css` | `tasks.scss` | `tasks.sass`
   - `/tasks.components.ts` --> `state/tasks.query.ts` 
@@ -53,6 +53,7 @@ For more examples, see `Recipes`
 {
   split = 'vertical'|'horizontal'|nil -- nil is default
   size = 100 -- # of columns | rows. default is 50% split
+  ignore_prefix = false -- useful for navigating to files like "index.ts" or "+page.svelte"
 }
 ```
 
@@ -91,6 +92,7 @@ If no results are found, will search backwards one directory, see `reverse`
   path = nil, -- overwrite path (experimental).
   prefix = 'default', -- full: stop at last period | short: stop at first _ or - | default: stop at first period.
   regex_type = 'E' -- default regex extended. See grep for types.
+  ignore_prefix = false -- useful for navigating to files like "index.ts" or "+page.svelte"
 }
 ```
 
