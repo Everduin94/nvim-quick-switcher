@@ -40,6 +40,13 @@ function M.resolve_prefix(path_state, option)
   end
 end
 
+function M.default_inline_config()
+  return {
+      goto_end = false,
+      avoid_set_jump = false,
+    }
+end
+
 function M.default_find_config()
   return {
       maxdepth = 2,
@@ -48,6 +55,7 @@ function M.default_find_config()
       reverse = true,
       prefix = 'default',
       regex_type = 'E',
+      ignore_prefix = false
     }
 end
 

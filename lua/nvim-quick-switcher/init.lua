@@ -1,4 +1,5 @@
 local util = require('nvim-quick-switcher.util')
+local ts = require('nvim-quick-switcher.ts')
 
 local M = {}
 
@@ -47,7 +48,10 @@ end
 -- Instead of '.' config/options. Create flexible call-back function.
 function M.switch(suffix, user_config)
   local path_state = get_path_state();
-  return navigation(path_state.path .. '/' .. path_state.prefix ..  '.' .. suffix, user_config)
+  local ignore_prefix = user_config ~= nil and user_config.ignore_prefix == true
+  local prefix = path_state.prefix ..  '.'
+  if ignore_prefix then prefix = '' end
+  return navigation(path_state.path .. '/' .. prefix .. suffix, user_config)
 end
 
 function M.toggle(suffixOne, suffixTwo)
@@ -60,11 +64,18 @@ function M.toggle(suffixOne, suffixTwo)
   return navigation(path_state.path .. '/' .. path_state.prefix ..  '.' .. suffix)
 end
 
+function M.inline_ts_switch(file_type, query_string, user_config)
+    local config = util.prop_factory(util.default_inline_config(), user_config)
+    local query = vim.treesitter.parse_query(file_type, query_string)
+    ts.go_to_node(file_type, query, config.goto_end, config.avoid_set_jump)
+end
+
 function M.find(input, user_config)
     local config = util.prop_factory(util.default_find_config(), user_config)
     local path_state = get_path_state();
     local path = config.path and config.path or path_state.path
     local prefix = util.resolve_prefix(path_state, config.prefix)
+    if config.ignore_prefix then prefix = '' end
     local base_find = [[find ]] .. path .. [[ -maxdepth ]] .. config.maxdepth
     local name_based = ' -name ' .. [[']] .. prefix .. input .. [[']]
     local regex_based = ' -name ' .. [[']] .. prefix .. [[*']] .. [[ | grep ]] .. '-' .. config.regex_type  .. [[ ']] .. input .. [[']]
