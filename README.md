@@ -39,12 +39,16 @@ use {
 
 ## Usage
 
-Switcher has 3 functions. `switch`, `toggle`, and `find`. No setup function call required. Just call a function with the desired arguments.
+Switcher has 4 functions. `switch`, `toggle`, `find`, `inline_ts_switch`. No setup function call required. Just call a function with the desired arguments.
 
 For more examples, see `Recipes`
 
 ### ➡️ Switch
 *Gets "prefix" of file name, switches to `prefix`.`suffix`*
+
+`switch(search_string, options)`
+
+#### Example
 
 `require('nvim-quick-switcher').switch('component.ts')`
 - `ticket.component.html` --> `ticket.component.ts`
@@ -61,6 +65,9 @@ For more examples, see `Recipes`
 ### 🔄 Toggle
 *Toggles `prefix`.`suffix`, based on current suffix / file extension*
 
+`toggle(search_string_one, search_string_two)`
+
+#### Example
 `require('nvim-quick-switcher').toggle('cpp', 'h')`
 - `node.cpp` --> `node.h`
 - `node.h` --> `node.cpp`
@@ -68,6 +75,9 @@ For more examples, see `Recipes`
 ### 🔍 Find 
 *Uses gnu/linux `find` & `grep` to find file and switch to `prefix`+`pattern`*
 
+`find(search_string, options)`
+
+#### Example
 `require('nvim-quick-switcher').find('*query*')`
 - Allows wild cards, i.e. first argument is search parameter for gnu/linux find
 - file: `ticket.component.ts` --> pattern: `ticket*query*`
@@ -97,13 +107,23 @@ If no results are found, will search backwards one directory, see `reverse`
 }
 ```
 
-#### Inline Switch (Treesitter)
+### 🌳 Inline Switch (Treesitter)
 Requires `nvim-treesitter/nvim-treesitter`
 
 *Uses treesitter queries to navigate inside of a file*
 
-```lua
+`inline_ts_switch(file_type, query_string, options)`
 
+#### Example
+`require('nvim-quick-switcher').inline_ts_switch('svelte', '(script_element (end_tag) @capture)')`
+- Places cursor at start of `</script>` node
+
+#### Options 
+```lua
+{
+  goto_end = false, -- go to start of node if false, go to end of node if true
+  avoid_set_jump = false, -- do not add to jumplist if true
+}
 ```
 
 ## Recipes (My Binds)
@@ -113,26 +133,40 @@ Requires `nvim-treesitter/nvim-treesitter`
 local keymap = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
 
+-- Styles
+keymap("n", "<leader>oi", "<cmd>:lua require('nvim-quick-switcher').find('.+css|.+scss|.+sass', { regex = true, prefix='full' })<CR>", opts)
+
+-- Types
+keymap("n", "<leader>orm", "<cmd>:lua require('nvim-quick-switcher').find('.+model.ts|.+models.ts|.+types.ts', { regex = true })<CR>", opts)
+
+-- Util
+keymap("n", "<leader>ol", "<cmd>:lua require('nvim-quick-switcher').find('*util.*', { prefix = 'short' })<CR>", opts)
+
 -- Tests
 keymap("n", "<leader>ot", "<cmd>:lua require('nvim-quick-switcher').find('.+test|.+spec', { regex = true, prefix='full' })<CR>", opts)
 
--- Stylesheets
-keymap("n", "<leader>oi", "<cmd>:lua require('nvim-quick-switcher').find('.+css|.+scss|.+sass', { regex = true, prefix='full' })<CR>", opts)
-
--- Redux-like
-keymap("n", "<leader>oe", "<cmd>:lua require('nvim-quick-switcher').find('*effects*')<CR>", opts)
-keymap("n", "<leader>oa", "<cmd>:lua require('nvim-quick-switcher').find('*actions*')<CR>", opts)
-keymap("n", "<leader>oq", "<cmd>:lua require('nvim-quick-switcher').find('*query*')<CR>", opts)
-keymap("n", "<leader>ow", "<cmd>:lua require('nvim-quick-switcher').find('*store*')<CR>", opts)
-
 -- Angular
-keymap("n", "<leader>os", "<cmd>:lua require('nvim-quick-switcher').find('.service.ts')<CR>", opts)
+keymap("n", "<leader>oy", "<cmd>:lua require('nvim-quick-switcher').find('.service.ts')<CR>", opts)
 keymap("n", "<leader>ou", "<cmd>:lua require('nvim-quick-switcher').find('.component.ts')<CR>", opts)
 keymap("n", "<leader>oo", "<cmd>:lua require('nvim-quick-switcher').find('.component.html')<CR>", opts)
 keymap("n", "<leader>op", "<cmd>:lua require('nvim-quick-switcher').find('.module.ts')<CR>", opts)
 
--- Switches for - or _ e.g. controller-util.lua
-keymap("n", "<leader>ol", "<cmd>:lua require('nvim-quick-switcher').find('*util.*', { prefix='short' })<CR>", opts)
+-- SvelteKit
+keymap("n", "<leader>oso", "<cmd>:lua require('nvim-quick-switcher').find('*page.svelte', { maxdepth = 1, ignore_prefix = true })<CR>", opts)
+keymap("n", "<leader>osi", "<cmd>:lua require('nvim-quick-switcher').find('*layout.svelte', { maxdepth = 1, ignore_prefix = true })<CR>", opts)
+keymap("n", "<leader>osu", "<cmd>:lua require('nvim-quick-switcher').find('.*page.server.ts|.*page.ts', { maxdepth = 1, regex = true, ignore_prefix = true })<CR>", opts)
+
+ -- Inline TS
+keymap("n", "<leader>osj", "<cmd>:lua require('nvim-quick-switcher').inline_ts_switch('svelte', '(script_element (end_tag) @capture)')<CR>", opts)
+keymap("n", "<leader>osk", "<cmd>:lua require('nvim-quick-switcher').inline_ts_switch('svelte', '(style_element (start_tag) @capture)')<CR>", opts)
+
+-- Redux-like
+keymap("n", "<leader>ore", "<cmd>:lua require('nvim-quick-switcher').find('*effects.ts')<CR>", opts)
+keymap("n", "<leader>ora", "<cmd>:lua require('nvim-quick-switcher').find('*actions.ts')<CR>", opts)
+keymap("n", "<leader>orw", "<cmd>:lua require('nvim-quick-switcher').find('*store.ts')<CR>", opts)
+keymap("n", "<leader>orf", "<cmd>:lua require('nvim-quick-switcher').find('*facade.ts')<CR>", opts)
+keymap("n", "<leader>ors", "<cmd>:lua require('nvim-quick-switcher').find('.+query.ts|.+selectors.ts|.+selector.ts', { regex = true })<CR>", opts)
+keymap("n", "<leader>orr", "<cmd>:lua require('nvim-quick-switcher').find('.+reducer.ts|.+repository.ts', { regex = true })<CR>", opts)
 ```
 
 ## Personal Motivation
@@ -145,4 +179,3 @@ I currently use nvim-quick-switcher on a daily basis for Angular Components, Tes
 
 ## Alternatives
 - [projectionist](https://github.com/tpope/vim-projectionist)
-
