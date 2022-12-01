@@ -1,7 +1,7 @@
 # Nvim Quick Switcher
 Quickly navigate to related/alternate files/extensions based on the current file name. Written in Lua.
 
-![demo-2](https://user-images.githubusercontent.com/14320878/152060031-cec37a34-b1f8-4812-9758-e43a04f044a8.gif)
+https://user-images.githubusercontent.com/14320878/205079483-82f2cd39-915e-485a-a5c6-20b188e1b26b.mp4
 
 ## Features
 - 🦕 Switch to files with common prefix (example: "tasks"):
