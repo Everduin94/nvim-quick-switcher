@@ -32,6 +32,7 @@ local function get_path_state()
   local path = buf_name:match('(.+)/.+$')
   local file_name = buf_name:match('.+/(.+)$')
   local prefix = file_name:match('[%-%w_]+')
+  local file_type = file_name:match('^.+%.(.+)$')
   local full_suffix = file_name:match('[%-%w_]+%.(.*)')
   local full_prefix = file_name:match('([%-%w_%.]+)%.%w+$')
   local short_prefix = file_name:match('[%w]+')
@@ -43,6 +44,7 @@ local function get_path_state()
     full_suffix = full_suffix,
     short_prefix = short_prefix,
     long_prefix = long_prefix,
+    file_type = file_type,
     file_name = file_name
   }
 end
@@ -70,6 +72,27 @@ function M.inline_ts_switch(file_type, query_string, user_config)
     local config = util.prop_factory(util.default_inline_config(), user_config)
     local query = vim.treesitter.parse_query(file_type, query_string)
     ts.go_to_node(file_type, query, config.goto_end, config.avoid_set_jump)
+end
+
+function M.v2_find(input, user_config)
+   local config = util.prop_factory(util.default_find_config(), user_config)
+   local path_state = get_path_state();
+   local full_user_input = input(path_state);
+   local full_user_path = full_user_input:match('(.+)/.+$')
+   local user_file_name = full_user_input:match('.+/(.+)$')
+   local base_find = [[find ]] .. full_user_path .. [[ -maxdepth ]] .. config.maxdepth
+   local name_based = ' -name ' .. [[']] .. user_file_name .. [[']]
+   local search = base_find .. name_based
+   local output = util.readCmd(search)
+   local matches = util.listToTable(output, function (item)
+      local file_name = item:match('.+/(.+)$')
+      return path_state.file_name == file_name
+   end);
+   if #matches == 1 then
+     navigation(matches[1], config)
+   elseif #matches > 1 then
+     selection(matches, config)
+   end
 end
 
 function M.find(input, user_config)
