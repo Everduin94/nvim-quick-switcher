@@ -131,7 +131,7 @@ Requires `nvim-treesitter/nvim-treesitter`
 }
 ```
 
-### Find by Function (Advanced)
+### 🚀 Find by Function (Advanced)
 Accepts a lua function that provides path/file information as an argument, and returns a file path as a string. Useful for switching across directories / folders.
 i.e. the user is provided file path data to then build an entire file path, that gets passed to vim select, that gets passed to navigate.
 
