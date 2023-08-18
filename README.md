@@ -131,6 +131,57 @@ Requires `nvim-treesitter/nvim-treesitter`
 }
 ```
 
+### Find by Function (Advanced)
+Accepts a lua function that provides path/file information as an argument, and returns a file path as a string. Useful for switching across directories / folders.
+i.e. the user is provided file path data to then build an entire file path, that gets passed to vim select, that gets passed to navigate.
+
+`require('nvim-quick-switcher').find_by_fn(fn, options)`
+
+#### Example
+
+This example switches from a test folder to a src folder (and vice versa) like in to a Java J-Unit project
+
+```lua
+local ex_find_test_fn = function (p)
+  local path = p.path;
+  local file_name = p.prefix;
+  local result = path:gsub('src', 'test') .. '/' .. file_name .. '*';
+  return result;
+end
+
+local find_src_fn = function (p)
+  local path = p.path;
+  local file_name = p.prefix;
+  local result = path:gsub('test', 'src') .. '/' .. file_name .. '*';
+  return result;
+end
+
+require('nvim-quick-switcher').find_by_fn(ex_find_test_fn)
+require('nvim-quick-switcher').find_by_fn(find_src_fn)
+```
+
+To make keybinds I've had to pass as a string, but there is likely a better way. 
+- If you know of one please open an issue/pr :)
+- If you don't know and are stuck, here's a solution
+
+```lua
+local find_test_fn = [[function (p) local path = p.path; local file_name = p.prefix; local result = path:gsub('src', 'test') .. '/' .. file_name .. '*'; return result; end]]
+local find_src_fn = [[function (p) local path = p.path; local file_name = p.prefix; local result = path:gsub('test', 'src') .. '/' .. file_name .. '*'; return result; end]]
+keymap("n", "<leader>ojj", "<cmd>:lua require('nvim-quick-switcher').find_by_fn(" .. find_test_fn .. ")<CR>", opts)
+keymap("n", "<leader>ojk", "<cmd>:lua require('nvim-quick-switcher').find_by_fn(" .. find_src_fn .. ")<CR>", opts)
+```
+
+#### Args
+```lua
+prefix -- The prefix of the file (task.component.ts) --> task
+full_prefix -- (task.component.ts) --> task.component
+full_suffix -- (task.component.ts) --> component.ts
+short_prefix -- (task-util.lua) --> task
+file_type -- (task-util.lua) --> lua
+file_name -- (src/tasks/task-util.lua) --> task-util.lua
+path -- (src/tasks/task-util.lua) --> src/tasks/task-util.lua
+```
+
 ## Recipes (My Binds)
 *My configuration for nvim-quick-switcher. Written in Lua*
 
@@ -161,7 +212,7 @@ keymap("n", "<leader>oso", "<cmd>:lua require('nvim-quick-switcher').find('*page
 keymap("n", "<leader>osi", "<cmd>:lua require('nvim-quick-switcher').find('*layout.svelte', { maxdepth = 1, ignore_prefix = true })<CR>", opts)
 keymap("n", "<leader>osu", "<cmd>:lua require('nvim-quick-switcher').find('.*page.server(.+js|.+ts)|.*page(.+js|.+ts)', { maxdepth = 1, regex = true, ignore_prefix = true })<CR>", opts)
 
- -- Inline TS
+ -- Inline Treesitter
 keymap("n", "<leader>osj", "<cmd>:lua require('nvim-quick-switcher').inline_ts_switch('svelte', '(script_element (end_tag) @capture)')<CR>", opts)
 keymap("n", "<leader>osk", "<cmd>:lua require('nvim-quick-switcher').inline_ts_switch('svelte', '(style_element (start_tag) @capture)')<CR>", opts)
 
@@ -172,6 +223,12 @@ keymap("n", "<leader>orw", "<cmd>:lua require('nvim-quick-switcher').find('*stor
 keymap("n", "<leader>orf", "<cmd>:lua require('nvim-quick-switcher').find('*facade.ts')<CR>", opts)
 keymap("n", "<leader>ors", "<cmd>:lua require('nvim-quick-switcher').find('.+query.ts|.+selectors.ts|.+selector.ts', { regex = true })<CR>", opts)
 keymap("n", "<leader>orr", "<cmd>:lua require('nvim-quick-switcher').find('.+reducer.ts|.+repository.ts', { regex = true })<CR>", opts)
+
+-- Java JUnit Tests
+local find_test_fn = [[function (p) local path = p.path; local file_name = p.prefix; local result = path:gsub('src', 'test') .. '/' .. file_name .. '*'; return result; end]]
+local find_src_fn = [[function (p) local path = p.path; local file_name = p.prefix; local result = path:gsub('test', 'src') .. '/' .. file_name .. '*'; return result; end]]
+keymap("n", "<leader>ojj", "<cmd>:lua require('nvim-quick-switcher').find_by_fn(" .. find_test_fn .. ")<CR>", opts)
+keymap("n", "<leader>ojk", "<cmd>:lua require('nvim-quick-switcher').find_by_fn(" .. find_src_fn .. ")<CR>", opts)
 ```
 
 ## Personal Motivation

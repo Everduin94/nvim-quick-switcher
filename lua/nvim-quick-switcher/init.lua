@@ -74,10 +74,10 @@ function M.inline_ts_switch(file_type, query_string, user_config)
     ts.go_to_node(file_type, query, config.goto_end, config.avoid_set_jump)
 end
 
-function M.v2_find(input, user_config)
+function M.find_by_fn(fn, user_config)
    local config = util.prop_factory(util.default_find_config(), user_config)
    local path_state = get_path_state();
-   local full_user_input = input(path_state);
+   local full_user_input = fn(path_state);
    local full_user_path = full_user_input:match('(.+)/.+$')
    local user_file_name = full_user_input:match('.+/(.+)$')
    local base_find = [[find ]] .. full_user_path .. [[ -maxdepth ]] .. config.maxdepth
