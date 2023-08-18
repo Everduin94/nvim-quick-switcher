@@ -101,7 +101,12 @@ If no results are found, will search backwards one directory, see `reverse`
   maxdepth = 2, -- directory depth 
   reverse = true, -- false will disable reverse search when no results are found
   path = nil, -- overwrite path (experimental).
-  prefix = 'default', -- full: stop at last period | short: stop at first _ or - | default: stop at first period.
+  prefix = 'default', 
+    -- full: stop at last period
+    -- short: stop at first _ or -
+    -- long: stop at last _ 
+    -- default: stop at first period.
+    -- lua function (you can pass a lua function to create a custom prefix)
   regex_type = 'E' -- default regex extended. See grep for types.
   ignore_prefix = false -- useful for navigating to files like "index.ts" or "+page.svelte"
 }
