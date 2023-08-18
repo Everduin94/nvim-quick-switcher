@@ -31,13 +31,26 @@ function M.prop_factory(defaults, props)
 end
 
 function M.resolve_prefix(path_state, option)
-  if option == 'short' then
-    return path_state.short_prefix
-  elseif option == 'full' then
-    return path_state.full_prefix
-  else
-    return path_state.prefix
-  end
+	if type(option) == "string" then
+		if option == "short" then
+			return path_state.short_prefix
+		elseif option == "full" then
+			return path_state.full_prefix
+		elseif option == "long" then
+			return path_state.long_prefix
+		else
+			return path_state.prefix
+		end
+	elseif type(option) == "function" then
+		local buf_name = vim.api.nvim_buf_get_name(0)
+		local file_name = buf_name:match(".+/(.+)%.")
+		local file_extension = buf_name:match(".+%.(%w+)$")
+		local custom_prefix = option(file_name, file_extension)
+		if custom_prefix == nil then
+			return path_state.prefix
+		end
+		return custom_prefix
+	end
 end
 
 function M.default_inline_config()

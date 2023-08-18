@@ -35,12 +35,14 @@ local function get_path_state()
   local full_suffix = file_name:match('[%-%w_]+%.(.*)')
   local full_prefix = file_name:match('([%-%w_%.]+)%.%w+$')
   local short_prefix = file_name:match('[%w]+')
+  local long_prefix = file_name:match("([%w_%-]+)[%-_]")
   return {
     path = path,
     prefix = prefix,
     full_prefix = full_prefix,
     full_suffix = full_suffix,
     short_prefix = short_prefix,
+    long_prefix = long_prefix,
     file_name = file_name
   }
 end
