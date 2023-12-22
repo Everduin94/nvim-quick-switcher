@@ -181,8 +181,8 @@ local function find(file_regex, opts)
   return function() require('nvim-quick-switcher').find(file_regex, opts) end
 end
 
-local function inline_ts_switch(scheme, opts)
-  return function() require('nvim-quick-switcher').inline_ts_switch(scheme, opts) end
+local function inline_ts_switch(file_type, scheme)
+  return function() require('nvim-quick-switcher').inline_ts_switch(file_type, scheme) end
 end
 
 local function find_by_fn(fn, opts)
@@ -201,20 +201,36 @@ vim.keymap.set("n", "<leader>ol", find('*util.*', { prefix = 'short' }), opts)
 -- Tests
 vim.keymap.set("n", "<leader>ot", find('.+test|.+spec', { regex = true, prefix='full' }), opts)
 
--- Angular
-vim.keymap.set("n", "<leader>oy", find('.service.ts'), opts)
-vim.keymap.set("n", "<leader>ou", find('.component.ts'), opts)
-vim.keymap.set("n", "<leader>oo", find('.component.html'), opts)
-vim.keymap.set("n", "<leader>op", find('.module.ts'), opts)
+-- Project Specific Keymaps
+-- * Maps keys based on project using an auto command. Ideal for reusing keymaps based on context.
+-- * Example: In Angular, `oo` switches to .component.html. In Svelte, `oo` switches to *page.svelte
+vim.api.nvim_create_autocmd({'UIEnter'}, {
+    callback = function(event)
+      local is_angular = next(vim.fs.find({ "angular.json", "nx.json" }, { upward = true }))
+      local is_svelte = next(vim.fs.find({ "svelte.config.js", "svelte.config.ts" }, { upward = true }))
 
--- SvelteKit
-vim.keymap.set("n", "<leader>oso", find('*page.svelte', { maxdepth = 1, ignore_prefix = true }), opts)
-vim.keymap.set("n", "<leader>osi", find('*layout.svelte', { maxdepth = 1, ignore_prefix = true }), opts)
-vim.keymap.set("n", "<leader>osu", find('.*page.server(.+js|.+ts)|.*page(.+js|.+ts)', { maxdepth = 1, regex = true, ignore_prefix = true }), opts)
+      -- Angular
+      if is_angular then
+        print('Angular')
+        vim.keymap.set("n", "<leader>oo", find('.component.html'), opts)
+        vim.keymap.set("n", "<leader>ou", find('.component.ts'), opts)
+        vim.keymap.set("n", "<leader>op", find('.module.ts'), opts)
+        vim.keymap.set("n", "<leader>oy", find('.service.ts'), opts)
+      end
 
- -- Inline TS
-vim.keymap.set("n", "<leader>osj", inline_ts_switch('svelte', '(script_element (end_tag) @capture)'), opts)
-vim.keymap.set("n", "<leader>osk", inline_ts_switch('svelte', '(style_element (start_tag) @capture)'), opts)
+      -- SvelteKit
+      if is_svelte then
+        print('Svelte')
+        vim.keymap.set("n", "<leader>oo", find('*page.svelte', { maxdepth = 1, ignore_prefix = true }), opts)
+        vim.keymap.set("n", "<leader>ou", find('.*page.server(.+js|.+ts)|.*page(.+js|.+ts)', { maxdepth = 1, regex = true, ignore_prefix = true }), opts)
+        vim.keymap.set("n", "<leader>op", find('*layout.svelte', { maxdepth = 1, ignore_prefix = true }), opts)
+
+         -- Inline TS
+        vim.keymap.set("n", "<leader>oj", inline_ts_switch('svelte', '(script_element (end_tag) @capture)'), opts)
+        vim.keymap.set("n", "<leader>ok", inline_ts_switch('svelte', '(style_element (start_tag) @capture)'), opts)
+      end
+    end
+})
 
 -- Redux-like
 vim.keymap.set("n", "<leader>ore", find('*effects.ts'), opts)
