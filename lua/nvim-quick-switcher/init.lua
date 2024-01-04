@@ -13,6 +13,13 @@ end
 
 local function navigation(file_name, options)
   local isSplit = options ~= nil and options.split ~= nil
+
+  local checkIfExists = options ~= nil and options.only_existing
+  if (checkIfExists and vim.fn.filereadable(file_name) == 0) then
+    if (options.only_existing_notify) then vim.print(file_name .. ' does not exist.') end
+    return;
+  end
+
   if (isSplit) then
     openSplit(options);
   end
