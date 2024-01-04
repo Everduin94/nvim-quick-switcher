@@ -16,15 +16,15 @@ local function navigation(file_name, options)
   if (isSplit) then
     openSplit(options);
   end
-    vim.api.nvim_command('e ' .. file_name)
+  vim.api.nvim_command('e ' .. file_name)
 end
 
 local function selection(items, options)
-      return vim.ui.select(
-        items,
-        { prompt = 'Multiple matches found:', format_item = function(item) return item end, },
-        function(choice) if choice then navigation(choice, options) end end
-     )
+  return vim.ui.select(
+    items,
+    { prompt = 'Multiple matches found:', format_item = function(item) return item end, },
+    function(choice) if choice then navigation(choice, options) end end
+  )
 end
 
 local function get_path_state()
@@ -53,7 +53,7 @@ end
 function M.switch(suffix, user_config)
   local path_state = get_path_state();
   local ignore_prefix = user_config ~= nil and user_config.ignore_prefix == true
-  local prefix = path_state.prefix ..  '.'
+  local prefix = path_state.prefix .. '.'
   if ignore_prefix then prefix = '' end
   return navigation(path_state.path .. '/' .. prefix .. suffix, user_config)
 end
@@ -65,61 +65,62 @@ function M.toggle(suffixOne, suffixTwo)
     suffix = suffixTwo
   end
 
-  return navigation(path_state.path .. '/' .. path_state.prefix ..  '.' .. suffix)
+  return navigation(path_state.path .. '/' .. path_state.prefix .. '.' .. suffix)
 end
 
 function M.inline_ts_switch(file_type, query_string, user_config)
-    local config = util.prop_factory(util.default_inline_config(), user_config)
-    local query = vim.treesitter.parse_query(file_type, query_string)
-    ts.go_to_node(file_type, query, config.goto_end, config.avoid_set_jump)
+  local config = util.prop_factory(util.default_inline_config(), user_config)
+  local query = vim.treesitter.parse_query(file_type, query_string)
+  ts.go_to_node(file_type, query, config.goto_end, config.avoid_set_jump)
 end
 
 function M.find_by_fn(fn, user_config)
-   local config = util.prop_factory(util.default_find_config(), user_config)
-   local path_state = get_path_state();
-   local full_user_input = fn(path_state);
-   local full_user_path = full_user_input:match('(.+)/.+$')
-   local user_file_name = full_user_input:match('.+/(.+)$')
-   local base_find = [[find ]] .. full_user_path .. [[ -maxdepth ]] .. config.maxdepth
-   local name_based = ' -name ' .. [[']] .. user_file_name .. [[']]
-   local search = base_find .. name_based
-   local output = util.readCmd(search)
-   local matches = util.listToTable(output, function (item)
-      local file_name = item:match('.+/(.+)$')
-      return path_state.file_name == file_name
-   end);
-   if #matches == 1 then
-     navigation(matches[1], config)
-   elseif #matches > 1 then
-     selection(matches, config)
-   end
+  local config = util.prop_factory(util.default_find_config(), user_config)
+  local path_state = get_path_state();
+  local full_user_input = fn(path_state);
+  local full_user_path = full_user_input:match('(.+)/.+$')
+  local user_file_name = full_user_input:match('.+/(.+)$')
+  local base_find = [[find ]] .. full_user_path .. [[ -maxdepth ]] .. config.maxdepth
+  local name_based = ' -name ' .. [[']] .. user_file_name .. [[']]
+  local search = base_find .. name_based
+  local output = util.readCmd(search)
+  local matches = util.listToTable(output, function(item)
+    local file_name = item:match('.+/(.+)$')
+    return path_state.file_name == file_name
+  end);
+  if #matches == 1 then
+    navigation(matches[1], config)
+  elseif #matches > 1 then
+    selection(matches, config)
+  end
 end
 
 function M.find(input, user_config)
-    local config = util.prop_factory(util.default_find_config(), user_config)
-    local path_state = get_path_state();
-    local path = config.path and config.path or path_state.path
-    local prefix = util.resolve_prefix(path_state, config.prefix)
-    if config.ignore_prefix then prefix = '' end
-    local base_find = [[find ]] .. path .. [[ -maxdepth ]] .. config.maxdepth
-    local name_based = ' -name ' .. [[']] .. prefix .. input .. [[']]
-    local regex_based = ' -name ' .. [[']] .. prefix .. [[*']] .. [[ | grep ]] .. '-' .. config.regex_type  .. [[ ']] .. input .. [[']]
-    local search = config.regex and base_find .. regex_based or base_find .. name_based
-    local output = util.readCmd(search)
-    local matches = util.listToTable(output, function (item)
-      local file_name = item:match('.+/(.+)$')
-      return path_state.file_name == file_name
-    end);
+  local config = util.prop_factory(util.default_find_config(), user_config)
+  local path_state = get_path_state();
+  local path = config.path and config.path or path_state.path
+  local prefix = util.resolve_prefix(path_state, config.prefix)
+  if config.ignore_prefix then prefix = '' end
+  local base_find = [[find ]] .. path .. [[ -maxdepth ]] .. config.maxdepth
+  local name_based = ' -name ' .. [[']] .. prefix .. input .. [[']]
+  local regex_based = ' -name ' ..
+      [[']] .. prefix .. [[*']] .. [[ | grep ]] .. '-' .. config.regex_type .. [[ ']] .. input .. [[']]
+  local search = config.regex and base_find .. regex_based or base_find .. name_based
+  local output = util.readCmd(search)
+  local matches = util.listToTable(output, function(item)
+    local file_name = item:match('.+/(.+)$')
+    return path_state.file_name == file_name
+  end);
 
-    if #matches == 1 then
-      navigation(matches[1], config)
-    elseif #matches > 1 then
-      selection(matches, config)
-    else
-     if config.reverse then
-       M.find(input, { maxdepth = 1, path = path .. '/..', reverse = false, regex = config.regex })
-     end
+  if #matches == 1 then
+    navigation(matches[1], config)
+  elseif #matches > 1 then
+    selection(matches, config)
+  else
+    if config.reverse then
+      M.find(input, { maxdepth = 1, path = path .. '/..', reverse = false, regex = config.regex })
     end
+  end
 end
 
 return M;
