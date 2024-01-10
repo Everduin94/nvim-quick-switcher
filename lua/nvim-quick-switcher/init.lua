@@ -65,14 +65,14 @@ function M.switch(suffix, user_config)
   return navigation(path_state.path .. '/' .. prefix .. suffix, user_config)
 end
 
-function M.toggle(suffixOne, suffixTwo)
+function M.toggle(suffixOne, suffixTwo, user_config)
   local path_state = get_path_state();
   local suffix = suffixOne;
   if path_state.full_suffix == suffix then
     suffix = suffixTwo
   end
 
-  return navigation(path_state.path .. '/' .. path_state.prefix .. '.' .. suffix)
+  return navigation(path_state.path .. '/' .. path_state.prefix .. '.' .. suffix, user_config)
 end
 
 function M.inline_ts_switch(file_type, query_string, user_config)
