@@ -65,7 +65,9 @@ For more examples, see `Recipes`
 ### 🔄 Toggle
 *Toggles `prefix`.`suffix`, based on current suffix / file extension*
 
-`toggle(search_string_one, search_string_two)`
+`toggle(search_string_one, search_string_two, options)`
+
+For `options` see `Common Options`
 
 #### Example
 `require('nvim-quick-switcher').toggle('cpp', 'h')`
@@ -170,6 +172,19 @@ file_type -- (task-util.lua) --> lua
 file_name -- (src/tasks/task-util.lua) --> task-util.lua
 path -- (src/tasks/task-util.lua) --> src/tasks/task-util.lua
 ```
+
+### 🌌 Common Options
+Options common for file location functions (`switch/toggle/find/find_by_fn`).
+```lua
+{
+  only_existing = false,
+  only_existing_notify = false,
+}
+```
+`only_existing` Causes the switcher to check if the target file exists
+before switching to it.
+`only_existing_notify` will print if the file does not exist.
+
 
 ## Recipes (My Keymaps)
 *My configuration for nvim-quick-switcher. Written in Lua*

@@ -12,7 +12,7 @@ end
 M.go_to_node = function(file_type, query, goto_end, avoid_set_jump)
   local bufnr = vim.api.nvim_get_current_buf()
   if vim.bo[bufnr].filetype ~= file_type then
-     return
+    return
   end
 
   local root = get_root(bufnr, file_type)
