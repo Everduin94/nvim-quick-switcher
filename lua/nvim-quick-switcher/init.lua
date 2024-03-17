@@ -12,6 +12,7 @@ local function openSplit(options)
 end
 
 local function navigation(file_name, options)
+  local isDrop = options ~= nil and options.drop ~= nil
   local isSplit = options ~= nil and options.split ~= nil
 
   local checkIfExists = options ~= nil and options.only_existing
@@ -23,7 +24,12 @@ local function navigation(file_name, options)
   if (isSplit) then
     openSplit(options);
   end
-  vim.api.nvim_command('e ' .. file_name)
+
+  if (isDrop) then
+    vim.api.nvim_command('drop ' .. file_name)
+  else
+    vim.api.nvim_command('e ' .. file_name)
+  end
 end
 
 local function selection(items, options)
