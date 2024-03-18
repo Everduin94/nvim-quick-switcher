@@ -111,6 +111,7 @@ If no results are found, will search backwards one directory, see `reverse`
     -- lua function (you can pass a lua function to create a custom prefix)
   regex_type = 'E' -- default regex extended. See grep for types.
   ignore_prefix = false -- useful for navigating to files like "index.ts" or "+page.svelte"
+  drop = false -- if true, drop instead of edit
 }
 ```
 
